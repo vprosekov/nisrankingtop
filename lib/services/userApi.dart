@@ -8,7 +8,7 @@ class UserApi {
   static UserApi? _instance;
 
   factory UserApi() => _instance ??= UserApi._();
-
+ 
   UserApi._();
 
   Future<Map<String, dynamic>> getApiKey(String iin, String password) async {
@@ -19,15 +19,15 @@ class UserApi {
       var data = json.decode(response.data);
       // It checks if the response contains the keys `apiKey` and `userId`. If it does, it returns the
       // value of `apiKey` and `userId`.
-      if (data.containsKey('apiKey') && data.containsKey('userId')) {
-        return {'apiKey':data['apiKey'],'userId':data['userId']};
+      if (data.containsKey('apiKey') && data.containsKey('id')) {
+        return {'apiKey':data['apiKey'],'userId':data['id']};
       }
     } on FormatException {
       return {};
     }
     return {};
   }
-
+  
   Future<Map<String, dynamic>> getUserInfoByIIN(String iin) async {
     var unescape = new HtmlUnescape();
     var response = await Api().dio.post('api.php?request=getuserinfo',
@@ -78,10 +78,11 @@ class UserApi {
     return {};
   }
 
-  Future<Map<String, dynamic>> getUserInfoById(String id) async {
+  Future<dynamic> getUserInfoById(String id) async {
     var unescape = new HtmlUnescape();
     var response = await Api().dio.post('api.php?request=getuserinfo',
-        data: new FormData.fromMap({"id": id}));
+        data: new FormData.fromMap({"userId": id}));
+    // print(response.data);
     // return unescape.convert(json.decode(response.data));
     try {
       var data = json.decode(response.data);

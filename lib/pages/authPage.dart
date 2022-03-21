@@ -33,6 +33,7 @@ class _AuthPageState extends State<AuthPage> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       resizeToAvoidBottomInset: false,
       key: scaffoldKey,
@@ -293,26 +294,7 @@ class _AuthPageState extends State<AuthPage> {
                                 if (formKey.currentState!.validate()) {
                                   // If the form is valid, display a Snackbar.
                                   
-                                    if (appController.requestAuth(iinController.text, passwordController.text) != false) {
-                                      
-                                      Get.to(() => MainPage());
-                                    } else {
-                                      HapticFeedback.vibrate();
-                                      
-                                      // snackbar using getX with text 'Неверный ИИН или пароль'
-                                      Get.snackbar(
-                                        'Неверный ИИН или пароль',
-                                        '',
-                                        icon: Icon(
-                                          Icons.error,
-                                          color: Colors.red,
-                                        ),
-                                        // backgroundColor: Colors.white,
-                                        // colorText: Colors.black,
-                                        snackPosition: SnackPosition.BOTTOM,
-                                        duration: Duration(seconds: 3),
-                                      );
-                                    }
+                                    appController.loginFunc(iinController.text, passwordController.text);
                                 }
                                 // Get.to(() => MainPage());
                                 // if (profileController

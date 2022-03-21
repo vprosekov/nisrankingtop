@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -9,6 +10,10 @@ import 'pages/authPage.dart';
 import 'pages/mainPage.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIOverlays([
+     SystemUiOverlay.bottom, //This line is used for showing the bottom bar
+  ]);
   Get.put(AppController());
   runApp(MyApp());
 }

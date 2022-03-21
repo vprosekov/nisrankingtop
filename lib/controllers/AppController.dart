@@ -1,4 +1,3 @@
-import 'dart:html';
 import 'package:connectivity/connectivity.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +11,9 @@ import 'package:nisrankingtop/services/userApi.dart';
 
 class AppController extends GetxController {
   var dio = Dio();
-  bool internetConnection = true;
+  bool internetConnection = false;
 
-  Map profile = {
+  RxMap profile = {
     'loggedIn': false,
     "id": '',
     'iin': '',
@@ -28,7 +27,9 @@ class AppController extends GetxController {
     "ministry": '',
     "scores": '',
     'apiKey': ''
-  };
+  }.obs;
+
+  String get name => profile.value['name'];
 
   Map getWeekdayDate() {
     var now = new DateTime.now();
@@ -39,17 +40,20 @@ class AppController extends GetxController {
     return {"weekday": formattedWeekDay, "date": formattedDate};
   }
 
-  Future<bool> requestAuth(String iin, String password) async {
+  dynamic requestAuth(String iin, String password) async {
     var tmpRestGetApi = await UserApi().getApiKey(iin, password);
-    var apiKey = tmpRestGetApi['apiKey'];
-    var profile_id = tmpRestGetApi['userId'];
-    if (apiKey != '') {
+
+    if (tmpRestGetApi.containsKey('apiKey') &&
+        tmpRestGetApi.containsKey('userId')) {
+      var apiKey = tmpRestGetApi['apiKey'];
+      var profile_id = tmpRestGetApi['userId'].toString();
       profile['iin'] = iin;
       profile['id'] = profile_id;
       profile['password'] = password;
       profile['loggedIn'] = true;
+      print(tmpRestGetApi.toString());
 
-      var tmpUserInfo = await UserApi().getUserInfoById(profile_id);
+      dynamic tmpUserInfo = await UserApi().getUserInfoById(profile_id);
       if (tmpUserInfo != {}) {
         profile['name'] = tmpUserInfo['name'];
         profile['gradeId'] = tmpUserInfo['gradeId'];
@@ -57,6 +61,13 @@ class AppController extends GetxController {
         profile['shanyraqId'] = tmpUserInfo['shanyraqId'];
         profile['shanyraqName'] = tmpUserInfo['shanyraqName'];
         profile['shanyraqRole'] = tmpUserInfo['shanyraqRole'];
+        // write profile to storage
+        await GetStorage().write('iin', iin);
+        await GetStorage().write('id', profile_id);
+        await GetStorage().write('password', password);
+        await GetStorage().write('name', tmpUserInfo['name']);
+        await GetStorage().write('isLogged', true);
+
         // profile['ministry'] = tmpUserInfo['ministry'];
         // profile['scores'] = tmpUserInfo['scores'];
         return true;
@@ -110,7 +121,8 @@ class AppController extends GetxController {
         );
         return;
       } else {
-        Get.to(() => MainPage());
+        // Get.to(() => MainPage());
+        Get.offAll(() => MainPage());
       }
 
       // get JSON from 'https://prv.petropavl.site/api/api.php?request=getuserapikey' with POST data iin=iin and password=password.
@@ -125,8 +137,6 @@ class AppController extends GetxController {
 
   @override
   void onInit() async {
-    await GetStorage.init();
-    initProfile();
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       // Got a new connectivity status!
       if (result == ConnectivityResult.none) {
@@ -137,12 +147,37 @@ class AppController extends GetxController {
         print('Connected');
       }
     });
+    await GetStorage.init();
+    initProfile();
 
     super.onInit();
   }
 
   void initProfile() async {
+    print(internetConnection);
+    bool show_loadinternet = false;
+    if (!internetConnection) {
+      show_loadinternet = true;
+      await Get.dialog(
+          AlertDialog(
+            title: const Text('Нет интернет подключения'),
+            content: const Text('Подключитесь к интернету'),
+            actions: [
+            TextButton(
+                onPressed: () {
+                  if(internetConnection){
+                    Get.back();
+                  }
+                }, // Close the dialog
+                child: const Text('Проверить подключение')),
+            ],
+          ),
+          barrierDismissible: false
+          );
+    }
+    while (!internetConnection) {}
     final userdate = GetStorage();
+    // print(userdate.read('isLogged'));
     userdate.writeIfNull('isLogged', false);
     userdate.writeIfNull('iin', '');
     userdate.writeIfNull('pasword', '');
@@ -151,46 +186,45 @@ class AppController extends GetxController {
     // else set isLogged to false
     if (userdate.read('isLogged') == true) {
       // check if iin and password in userdate are not equal to ''
-      if (userdate.read('iin') != {} && userdate.read('password') != {}) {
-        var tmpRestGetApi = await UserApi()
-            .getApiKey(userdate.read('iin'), userdate.read('password'));
-        var apiKey = tmpRestGetApi['apiKey'];
-        var profile_id = tmpRestGetApi['userId'];
-        if (apiKey != '') {
-          profile['iin'] = userdate.read('iin');
-          profile['id'] = profile_id;
-          profile['password'] = userdate.read('password');
-          profile['loggedIn'] = true;
-
-          var tmpUserInfo = await UserApi().getUserInfoById(profile_id);
-          if (tmpUserInfo != {}) {
-            profile['name'] = tmpUserInfo['name'];
-            profile['gradeId'] = tmpUserInfo['gradeId'];
-            profile['gradeName'] = tmpUserInfo['gradeName'];
-            profile['shanyraqId'] = tmpUserInfo['shanyraqId'];
-            profile['shanyraqName'] = tmpUserInfo['shanyraqName'];
-            profile['shanyraqRole'] = tmpUserInfo['shanyraqRole'];
-            // profile['ministry'] = tmpUserInfo['ministry'];
-            // profile['scores'] = tmpUserInfo['scores'];
-          }
-        }
-      }
+      await loginFunc(userdate.read('iin'), userdate.read('password'));
     }
+  }
 
-    profile = {
-      'loggedIn': false,
-      "id": '',
-      'iin': '',
-      'password': '',
-      'name': '',
-      "gradeId": '',
-      "gradeName": '',
-      "shanyraqId": '',
-      "shanyraqName": '',
-      "shanyraqRole": '',
-      // "ministry": '',
-      // "scores": '',
-      'apiKey': ''
-    };
+  loginFunc(String iin, String password) async {
+    if (await requestAuth(iin, password) != false) {
+      
+        Get.offAll(() => MainPage());
+    } else {
+      profile = {
+        'loggedIn': false,
+        "id": '',
+        'iin': '',
+        'password': '',
+        'name': '',
+        "gradeId": '',
+        "gradeName": '',
+        "shanyraqId": '',
+        "shanyraqName": '',
+        "shanyraqRole": '',
+        // "ministry": '',
+        // "scores": '',
+        'apiKey': ''
+      }.obs;
+      HapticFeedback.vibrate();
+
+      // snackbar using getX with text 'Неверный ИИН или пароль'
+      Get.snackbar(
+        'Неверный ИИН или пароль',
+        '',
+        icon: Icon(
+          Icons.error,
+          color: Colors.red,
+        ),
+        // backgroundColor: Colors.white,
+        // colorText: Colors.black,
+        snackPosition: SnackPosition.BOTTOM,
+        duration: Duration(seconds: 3),
+      );
+    }
   }
 }
