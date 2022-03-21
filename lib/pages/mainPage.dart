@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:nisrankingtop/variables/themes.dart';
+import 'package:get_storage/get_storage.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({ Key? key }) : super(key: key);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:nisrankingtop/controllers/AppController.dart';
@@ -13,8 +14,8 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-  // final AppController appController = Get.find<AppController>();
-  final AppController appController = Get.put(AppController());
+  final AppController appController = Get.find<AppController>();
+  // final AppController appController = Get.put(AppController());
 
   late TextEditingController iinController;
   late TextEditingController passwordController;
@@ -54,7 +55,7 @@ class _AuthPageState extends State<AuthPage> {
               mainAxisSize: MainAxisSize.max,
               children: [
                 Text(
-                  appController.currentDayOfWeek,
+                    appController.getWeekdayDate()["weekday"],
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     color: Color(0xFF252E65),
@@ -65,7 +66,7 @@ class _AuthPageState extends State<AuthPage> {
                 Padding(
                   padding: EdgeInsetsDirectional.fromSTEB(6, 0, 0, 0),
                   child: Text(
-                    '10 Oct',
+                    appController.getWeekdayDate()["date"],
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       color: Color(0xFFE2E2E2),
@@ -130,6 +131,7 @@ class _AuthPageState extends State<AuthPage> {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
+                            // * Поле ввода ИИН
                             Padding(
                               padding: EdgeInsetsDirectional.fromSTEB(
                                   0.w, 50.h, 0.w, 0.h),
@@ -191,6 +193,7 @@ class _AuthPageState extends State<AuthPage> {
                                 ],
                               ),
                             ),
+                            // * Поле ввода пароля
                             Padding(
                               padding: EdgeInsetsDirectional.fromSTEB(
                                   0.w, 50.h, 0.w, 0.h),
@@ -253,10 +256,7 @@ class _AuthPageState extends State<AuthPage> {
                                       maxLines: 1,
                                       validator: (val) {
                                         if (val!.isEmpty) {
-                                          return 'Введите правильный ИИН';
-                                        }
-                                        if (val.length < 12) {
-                                          return 'Неверный ИИН';
+                                          return 'Введите пароль';
                                         }
                                         return null;
                                       },
@@ -289,7 +289,32 @@ class _AuthPageState extends State<AuthPage> {
                                 //       'onetap'),
                                 //   duration: Duration(seconds: 1),
                                 // ));
-                                Get.to(() => MainPage());
+                                // print "Ok" if the form is valid
+                                if (formKey.currentState!.validate()) {
+                                  // If the form is valid, display a Snackbar.
+                                  
+                                    if (appController.requestAuth(iinController.text, passwordController.text) != false) {
+                                      
+                                      Get.to(() => MainPage());
+                                    } else {
+                                      HapticFeedback.vibrate();
+                                      
+                                      // snackbar using getX with text 'Неверный ИИН или пароль'
+                                      Get.snackbar(
+                                        'Неверный ИИН или пароль',
+                                        '',
+                                        icon: Icon(
+                                          Icons.error,
+                                          color: Colors.red,
+                                        ),
+                                        // backgroundColor: Colors.white,
+                                        // colorText: Colors.black,
+                                        snackPosition: SnackPosition.BOTTOM,
+                                        duration: Duration(seconds: 3),
+                                      );
+                                    }
+                                }
+                                // Get.to(() => MainPage());
                                 // if (profileController
                                 //     .getDetailedReceiptData(shortReceipt.id)
                                 //     .json
