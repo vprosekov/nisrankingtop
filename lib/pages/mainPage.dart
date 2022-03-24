@@ -202,19 +202,86 @@ class _MainPageState extends State<MainPage> {
                               mainAxisSize: MainAxisSize.max,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                Row(
+                                  children: [
+                                    Obx(
+                                      () => Text(
+                                        '${[
+                                          for (int i = 0; i < 2; i++)
+                                            appController.name.split(" ")[i]
+                                        ].join("\n")}',
+                                        overflow: TextOverflow.fade,
+                                        maxLines: 3,
+                                        softWrap: false,
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          color: Color(0xFF070707),
+                                          fontSize: 20.sp,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                    // Text "#0001" with size 12.sp and color 0xFF878787 Poppins Regular
+                                    Padding(
+                                      padding: EdgeInsetsDirectional.fromSTEB(
+                                          12.w, 0.h, 0.w, 0.h),
+                                      child: Text(
+                                        '#0001',
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          color: Color(0xFF878787),
+                                          fontSize: 20.sp,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                // horizontal divider width:120.w height:1.h color:0xFF878787
+                                Container(
+                                  width: 120.w,
+                                  height: 1.h,
+                                  color: Color(0xFF878787),
+                                ),
+                                // Row with text "Keruen Shanyragy" and size 12.sp and color Black Poppins Regular
+                                Row(
+                                  children: [
+                                    Obx(
+                                      () => Text(
+                                        '${appController.shanyraqName}',
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          color: Color(0xFF070707),
+                                          fontSize: 12.sp,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 2.w,
+                                    ),
+                                    // Text appcontroller.shanyraqRole with size 9.sp and color 0xFFA4AA01 Poppins Light
+                                    Obx(
+                                      () => Text(
+                                        '${appController.shanyraqRole}',
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          color: Color(0xFFA4AA01),
+                                          fontSize: 10.sp,
+                                          fontWeight: FontWeight.w300,
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                // Text appcontroller.gradeName with size 14.sp and color 0xFF070707 Poppins Medium
                                 Obx(
                                   () => Text(
-                                    '${[
-                                      for (int i = 0; i < 2; i++)
-                                        appController.name.split(" ")[i]
-                                    ].join("\n")}',
-                                    overflow: TextOverflow.fade,
-                                    maxLines: 3,
-                                    softWrap: false,
+                                    '${appController.gradeName}',
                                     style: TextStyle(
                                       fontFamily: 'Poppins',
                                       color: Color(0xFF070707),
-                                      fontSize: 20.sp,
+                                      fontSize: 20 .sp,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -230,19 +297,22 @@ class _MainPageState extends State<MainPage> {
                           )
                         ],
                       ),
-                      SizedBox(height: 25.h),
+                      // SizedBox(height: 20.h),
                       Row(
                         mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
+                          Column(
                             mainAxisSize: MainAxisSize.max,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      5.w, 0.h, 0.w, 0.h),
-                                  child: Obx(
+                              Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Obx(
                                     () => Text(
                                       appController.scores.toString(),
                                       style: TextStyle(
@@ -252,26 +322,63 @@ class _MainPageState extends State<MainPage> {
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
-                                  )),
-                              Text(
-                                'баллов',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  color: Color(0xFFF9F9F9),
-                                  fontSize: 18.sp,
-                                  fontWeight: FontWeight.w600,
+                                  ),
+                                  SizedBox(width: 5.w,),
+                                  Text(
+                                    'баллов',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      color: Color(0xFFF9F9F9),
+                                      fontSize: 18.sp,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              // Text with appController.name size 14.sp color 0xFFF9F9F9 Poppins Regular letter spacing 0.2.sp and lineheight 0.8.sp
+                              Obx(
+                                () => Text(
+                                  '${appController.name}',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    color: Color(0xFFF9F9F9),
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w400,
+                                    letterSpacing: 0.1.sp
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                          Text(
-                            '#36',
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              color: Color(0xFFF9F9F9),
-                              fontSize: 36.sp,
-                              fontWeight: FontWeight.w600,
-                            ),
+                          Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Obx(
+                                    ()=> Text(
+                                  'No. ${appController.studentsTop}',
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          color: Color(0xFFF9F9F9),
+                                          fontSize: 36.sp,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                  ),
+                                  
+                                ],
+                              ),
+                              // Text 'In NIS PTR students rating' size 9.sp Poppins Regular color 0xFFC0C0C0
+                              Text(
+                                'В рейтинге учеников NIS PTR',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: Color(0xFFC0C0C0),
+                                  fontSize: 9.sp,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
                           )
                         ],
                       )
@@ -409,12 +516,11 @@ class _MainPageState extends State<MainPage> {
                                           Get.back(), // Close the dialog
                                       child: const Text('Нет')),
                                   TextButton(
-                                      onPressed: () =>
-                                          appController.unlogin(), // Close the dialog
+                                      onPressed: () => appController
+                                          .unlogin(), // Close the dialog
                                       child: const Text('Да'))
                                 ],
                               ));
-                              
                             },
                             child: Card(
                                 color: Colors.white,

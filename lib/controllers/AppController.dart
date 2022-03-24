@@ -28,12 +28,18 @@ class AppController extends GetxController {
     "shanyraqRole": '',
     "ministry": '',
     "scores": '',
+    "studentsTop": '',
     'apiKey': ''
   }.obs;
 
   String get name => profile.value['name'];
+  String get shanyraqName => profile.value['shanyraqName'].toString();
+  String get shanyraqRole => profile.value['shanyraqRole'].toString();
+  String get gradeName => profile.value['gradeName'].toString();
+  
+  String get studentsTop => profile.value['studentsTop'].toString();
 
-  String get scores => profile.value['scores'];
+  String get scores => profile.value['scores'].toString();
 
   Map getWeekdayDate() {
     var now = new DateTime.now();
@@ -68,6 +74,7 @@ class AppController extends GetxController {
         profile['shanyraqName'] = tmpUserInfo['shanyraqName'];
         profile['shanyraqRole'] = tmpUserInfo['shanyraqRole'];
         profile['scores'] = tmpUserInfo['scores'];
+        profile['studentsTop'] = tmpUserInfo['studentsTop'];
         // write profile to storage
         await GetStorage().write('iin', iin);
         await GetStorage().write('id', profile_id);
@@ -75,6 +82,7 @@ class AppController extends GetxController {
         await GetStorage().write('name', tmpUserInfo['name']);
         await GetStorage().write('isLogged', true);
         await GetStorage().write('scores', tmpUserInfo['scores']);
+        await GetStorage().write('studentsTop', tmpUserInfo['studentsTop']);
 
         // profile['ministry'] = tmpUserInfo['ministry'];
         return true;
@@ -145,6 +153,7 @@ class AppController extends GetxController {
 
   @override
   void onInit() async {
+    await GetStorage.init();
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       // Got a new connectivity status!
       if (result == ConnectivityResult.none) {
@@ -155,7 +164,6 @@ class AppController extends GetxController {
         print('Connected');
       }
     });
-    await GetStorage.init();
     initProfile();
 
     super.onInit();
@@ -208,19 +216,20 @@ class AppController extends GetxController {
     await GetStorage().write('scores', '');
     Get.offAll(() => AuthPage());
     profile = {
-      'loggedIn': false,
-      "id": '',
-      'iin': '',
-      'password': '',
-      'name': '',
-      "gradeId": '',
-      "gradeName": '',
-      "shanyraqId": '',
-      "shanyraqName": '',
-      "shanyraqRole": '',
-      // "ministry": '',
-      // "scores": '',
-      'apiKey': ''
+    'loggedIn': false,
+    "id": '',
+    'iin': '',
+    'password': '',
+    'name': '',
+    "gradeId": '',
+    "gradeName": '',
+    "shanyraqId": '',
+    "shanyraqName": '',
+    "shanyraqRole": '',
+    "ministry": '',
+    "scores": '',
+    "studentsTop": '',
+    'apiKey': ''
     }.obs;
     HapticFeedback.vibrate();
 
@@ -247,19 +256,20 @@ class AppController extends GetxController {
     } else {
       Get.offAll(() => AuthPage());
       profile = {
-        'loggedIn': false,
-        "id": '',
-        'iin': '',
-        'password': '',
-        'name': '',
-        "gradeId": '',
-        "gradeName": '',
-        "shanyraqId": '',
-        "shanyraqName": '',
-        "shanyraqRole": '',
-        // "ministry": '',
-        // "scores": '',
-        'apiKey': ''
+    'loggedIn': false,
+    "id": '',
+    'iin': '',
+    'password': '',
+    'name': '',
+    "gradeId": '',
+    "gradeName": '',
+    "shanyraqId": '',
+    "shanyraqName": '',
+    "shanyraqRole": '',
+    "ministry": '',
+    "scores": '',
+    "studentsTop": '',
+    'apiKey': ''
       }.obs;
       HapticFeedback.vibrate();
 

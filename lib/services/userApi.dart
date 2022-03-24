@@ -103,7 +103,8 @@ class UserApi {
             tmpdt.containsKey('shanyraqId') &&
             tmpdt.containsKey('shanyraqName') &&
             tmpdt.containsKey('leaderId') &&
-            tmpdt.containsKey('scores')) {
+            tmpdt.containsKey('scores') &&
+            tmpdt.containsKey('studentsTop')) {
           if (tmpdt['leaderId'] == tmpdt['userId']) {
             tmpdt['shanyraqRole'] = "leader";
           } else {
@@ -119,6 +120,7 @@ class UserApi {
             "shanyraqName": tmpdt['shanyraqName'],
             "shanyraqRole": tmpdt['shanyraqRole'],
             "scores": tmpdt['scores'],
+            "studentsTop": tmpdt['studentsTop'],
             // "ministry": unescape.convert(tmpdt['ministry']),
             // "scores": tmpdt['scores'],
           };
