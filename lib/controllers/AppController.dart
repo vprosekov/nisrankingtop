@@ -6,6 +6,8 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:nisrankingtop/models/user.dart';
+import 'package:nisrankingtop/pages/authPage.dart';
+import 'package:nisrankingtop/pages/loadingPage.dart';
 import 'package:nisrankingtop/pages/mainPage.dart';
 import 'package:nisrankingtop/services/userApi.dart';
 
@@ -31,6 +33,8 @@ class AppController extends GetxController {
 
   String get name => profile.value['name'];
 
+  String get scores => profile.value['scores'];
+
   Map getWeekdayDate() {
     var now = new DateTime.now();
     var dateNow = new DateFormat('d MMM');
@@ -41,6 +45,7 @@ class AppController extends GetxController {
   }
 
   dynamic requestAuth(String iin, String password) async {
+    Get.offAll((() => LoadingPage()));
     var tmpRestGetApi = await UserApi().getApiKey(iin, password);
 
     if (tmpRestGetApi.containsKey('apiKey') &&
@@ -54,6 +59,7 @@ class AppController extends GetxController {
       print(tmpRestGetApi.toString());
 
       dynamic tmpUserInfo = await UserApi().getUserInfoById(profile_id);
+      print(tmpUserInfo.toString());
       if (tmpUserInfo != {}) {
         profile['name'] = tmpUserInfo['name'];
         profile['gradeId'] = tmpUserInfo['gradeId'];
@@ -61,18 +67,20 @@ class AppController extends GetxController {
         profile['shanyraqId'] = tmpUserInfo['shanyraqId'];
         profile['shanyraqName'] = tmpUserInfo['shanyraqName'];
         profile['shanyraqRole'] = tmpUserInfo['shanyraqRole'];
+        profile['scores'] = tmpUserInfo['scores'];
         // write profile to storage
         await GetStorage().write('iin', iin);
         await GetStorage().write('id', profile_id);
         await GetStorage().write('password', password);
         await GetStorage().write('name', tmpUserInfo['name']);
         await GetStorage().write('isLogged', true);
+        await GetStorage().write('scores', tmpUserInfo['scores']);
 
         // profile['ministry'] = tmpUserInfo['ministry'];
-        // profile['scores'] = tmpUserInfo['scores'];
         return true;
       }
     }
+    Get.offAll((() => AuthPage()));
     return false;
   }
 
@@ -154,7 +162,7 @@ class AppController extends GetxController {
   }
 
   void initProfile() async {
-    print(internetConnection);
+    print("Internet connection: " + internetConnection.toString());
     bool show_loadinternet = false;
     if (!internetConnection) {
       show_loadinternet = true;
@@ -163,21 +171,22 @@ class AppController extends GetxController {
             title: const Text('Нет интернет подключения'),
             content: const Text('Подключитесь к интернету'),
             actions: [
-            TextButton(
-                onPressed: () {
-                  if(internetConnection){
-                    Get.back();
-                  }
-                }, // Close the dialog
-                child: const Text('Проверить подключение')),
+              TextButton(
+                  onPressed: () {
+                    if (internetConnection) {
+                      Get.back();
+                    }
+                  }, // Close the dialog
+                  child: const Text('Проверить подключение')),
             ],
           ),
-          barrierDismissible: false
-          );
+          barrierDismissible: false);
     }
+    // Get.offAll((() => LoadingPage()));
     while (!internetConnection) {}
+    // Get.offAll((() => AuthPage()));
     final userdate = GetStorage();
-    // print(userdate.read('isLogged'));
+    print("isLogged: " + userdate.read('isLogged').toString());
     userdate.writeIfNull('isLogged', false);
     userdate.writeIfNull('iin', '');
     userdate.writeIfNull('pasword', '');
@@ -190,11 +199,53 @@ class AppController extends GetxController {
     }
   }
 
+  unlogin() async {
+    await GetStorage().write('iin', '');
+    await GetStorage().write('id', '');
+    await GetStorage().write('password', '');
+    await GetStorage().write('name', '');
+    await GetStorage().write('isLogged', false);
+    await GetStorage().write('scores', '');
+    Get.offAll(() => AuthPage());
+    profile = {
+      'loggedIn': false,
+      "id": '',
+      'iin': '',
+      'password': '',
+      'name': '',
+      "gradeId": '',
+      "gradeName": '',
+      "shanyraqId": '',
+      "shanyraqName": '',
+      "shanyraqRole": '',
+      // "ministry": '',
+      // "scores": '',
+      'apiKey': ''
+    }.obs;
+    HapticFeedback.vibrate();
+
+    // snackbar using getX with text 'Неверный ИИН или пароль'
+    Get.snackbar(
+      // snackbar position at top
+      
+      'Вы разлогинились',
+      '',
+      icon: Icon(
+        Icons.error,
+        color: Colors.red,
+      ),
+      // backgroundColor: Colors.white,
+      // colorText: Colors.black,
+      snackPosition: SnackPosition.TOP,
+      duration: Duration(seconds: 3),
+    );
+  }
+
   loginFunc(String iin, String password) async {
     if (await requestAuth(iin, password) != false) {
-      
-        Get.offAll(() => MainPage());
+      Get.offAll(() => MainPage());
     } else {
+      Get.offAll(() => AuthPage());
       profile = {
         'loggedIn': false,
         "id": '',
