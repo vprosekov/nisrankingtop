@@ -33,6 +33,7 @@ class AppController extends GetxController {
   }.obs;
 
   String get name => profile.value['name'];
+  String get id => profile.value['id'];
   String get shanyraqName => profile.value['shanyraqName'].toString();
   String get shanyraqRole => profile.value['shanyraqRole'].toString();
   String get gradeName => profile.value['gradeName'].toString();
@@ -154,6 +155,10 @@ class AppController extends GetxController {
   @override
   void onInit() async {
     await GetStorage.init();
+    var tmpcon = await (Connectivity().checkConnectivity());
+    if(tmpcon != ConnectivityResult.none){
+      internetConnection = true;
+    }
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       // Got a new connectivity status!
       if (result == ConnectivityResult.none) {

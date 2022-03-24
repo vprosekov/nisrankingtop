@@ -225,14 +225,16 @@ class _MainPageState extends State<MainPage> {
                                     // Text "#0001" with size 12.sp and color 0xFF878787 Poppins Regular
                                     Padding(
                                       padding: EdgeInsetsDirectional.fromSTEB(
-                                          12.w, 0.h, 0.w, 0.h),
-                                      child: Text(
-                                        '#0001',
-                                        style: TextStyle(
-                                          fontFamily: 'Poppins',
-                                          color: Color(0xFF878787),
-                                          fontSize: 20.sp,
-                                          fontWeight: FontWeight.w400,
+                                          6.w, 0.h, 0.w, 0.h),
+                                      child: Obx(
+                                        ()=>Text(
+                                          "#${appController.id}",
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins',
+                                            color: Color(0xFF878787),
+                                            fontSize: 20.sp,
+                                            fontWeight: FontWeight.w400,
+                                          ),
                                         ),
                                       ),
                                     ),
